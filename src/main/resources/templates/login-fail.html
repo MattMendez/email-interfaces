@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>login-fail</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/bootstrap.css" rel="stylesheet"
+        th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+
+  <h1 > Login fail for User </h1>
+
+  <div th:text="${session.user}"></div>
+
+  <div>
+    <a type="button" class="btn btn-warning" th:href="@{/interfaces/index}" methods="get"> Try again </a>
+  </div>
+
+</body>
+</html>

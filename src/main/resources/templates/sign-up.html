@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sign-up</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/bootstrap.css" rel="stylesheet"
+        th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+  <h1 align="center"> Not Gmail</h1>
+
+  <h2 align="center"> GIVE US YOUR DATA </h2>
+
+  <div>
+    <form class="form-horizontal" action="#" th:action="@{/interfaces/sign-up}" th:object="${signUpForm}" method="post">
+
+      <div>
+        <label class="col-sm-2 control-label" >Enter a new Email</label>
+        <label>
+          <input class="form-control" type="text" id="email" name="email" th:field="*{email}">
+        </label>
+      </div>
+
+      <div>
+        <label class="col-sm-2 control-label" >Password</label>
+        <label>
+          <input class="form-control" type="password"  th:field="*{password}">
+        </label>
+      </div>
+
+      <input class="btn btn-primary" type="submit"  name="sendLogin">
+    </form>
+
+    <div>
+      <a type="button" class="btn btn-warning" th:href="@{/interfaces/regret}" methods="get"> Go back, you coward </a>
+    </div>
+
+  </div>
+
+</body>
+</html>
