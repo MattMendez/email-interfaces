@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TotallyNotAScamEmail</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/bootstrap.css" rel="stylesheet"
+        th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+<h1>Ho you wanna scam?</h1>
+<div>
+  <form action="#" th:action="@{/emails/new-email}" th:object="${email}" method="post">
+
+    <label>To</label>
+    <label>
+      <input type="text" class="form-control" id="to" name="to" th:field="*{receiver}">
+    </label>
+
+    <div>
+      <label>Message</label>
+      <label>
+        <input type="text" class="form-control" width="100" id="message" name="message" th:field="*{body}">
+      </label>
+    </div>
+
+    <div>
+      <input type="submit" class="btn btn-primary" name="sendEmail">
+    </div>
+    <div>
+      <a type="button" th:href="@{/new-email}" methods="get" class="btn btn-danger"> Go Back </a>
+    </div>
+
+  </form>
+</div>
+
+</body>
+</html>

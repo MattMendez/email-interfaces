@@ -1,0 +1,72 @@
+package com.email.interfaces.configuration;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
+import org.springframework.cloud.gcp.pubsub.integration.AckMode;
+import org.springframework.cloud.gcp.pubsub.integration.inbound.PubSubInboundChannelAdapter;
+import org.springframework.cloud.gcp.pubsub.integration.outbound.PubSubMessageHandler;
+import org.springframework.cloud.gcp.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import org.springframework.cloud.gcp.pubsub.support.GcpPubSubHeaders;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.MessagingGateway;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.channel.DirectChannel;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+
+@Configuration
+public class PubSubConfig {
+
+    @Bean
+    public MessageChannel respuestaTodosLosMailsChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public PubSubInboundChannelAdapter messageChannelAdapter(
+            @Qualifier("respuestaTodosLosMailsChannel") MessageChannel inputChannel,
+            PubSubTemplate pubSubTemplate) {
+        PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, "respuesta-todos-los-emails-sub");
+        adapter.setOutputChannel(inputChannel);
+        adapter.setAckMode(AckMode.MANUAL);
+
+        return adapter;
+    }
+
+
+    //PARA MANDAR
+    @Bean
+    public MessageChannel consultaTodosLosMailsChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "consultaTodosLosMailsChannel")
+    public MessageHandler consultaTodosLosMailsSender(PubSubTemplate pubsubTemplate) {
+        return new PubSubMessageHandler(pubsubTemplate, "consulta-todos-los-emails");
+    }
+
+    @MessagingGateway(defaultRequestChannel = "consultaTodosLosMailsChannel")
+    public interface consultaTodosLosMailsPubsubOutboundGateway {
+        void sendToPubsub(String text);
+    }
+
+    @Bean
+    public MessageChannel nuevoEmailChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "nuevoEmailChannel")
+    public MessageHandler nuevoEmailSender(PubSubTemplate pubsubTemplate) {
+        return new PubSubMessageHandler(pubsubTemplate, "nuevo-email");
+    }
+
+    @MessagingGateway(defaultRequestChannel = "nuevoEmailChannel")
+    public interface NuevoEmailPubsubOutboundGateway {
+        void sendToPubsub(String text);
+    }
+
+
+}

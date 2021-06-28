@@ -5,17 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Size;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class LoginForm {
+public class EmailListResponse {
 
-    @Size(max = 50)
-    private String email;
+    List<Email> receivedEmails;
 
-    private String password;
-
+    List<Email> sentEmails;
 }

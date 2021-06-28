@@ -1,8 +1,10 @@
 package com.email.interfaces.services;
 
+import com.email.interfaces.dtos.EmailListResponse;
 import com.email.interfaces.dtos.LoginForm;
 import com.email.interfaces.dtos.RequestVerification;
 import com.email.interfaces.dtos.SignUpForm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +27,10 @@ public class LoginService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public String verifyLoginForm(LoginForm loginForm, HttpSession httpSession, Model model) {
+    @Autowired
+    private EmailService emailService;
+
+    public String verifyLoginForm(LoginForm loginForm, HttpSession httpSession, Model model) throws JsonProcessingException, InterruptedException {
 
         if( loginForm.getEmail() != null
                 && !loginForm.getEmail().isEmpty()
@@ -33,11 +38,17 @@ public class LoginService {
                 && !loginForm.getPassword().isEmpty())
         {
 
+            if(!loginForm.getEmail().contains("@")){
+                return "invalid-data";
+            }
             RequestVerification requestVerification = restTemplate.postForObject(usersApiUrl + "/login-verify",loginForm, RequestVerification.class);
 
             if (requestVerification!= null && requestVerification.getExist()){
                 httpSession.setAttribute("user", loginForm.getEmail());
-                //Faltan los mails
+
+                EmailListResponse emailListResponse = emailService.getAllEmails(loginForm.getEmail());
+
+                model.addAttribute("emails",emailListResponse);
 
                 return "home";
             } else {
@@ -52,19 +63,28 @@ public class LoginService {
     }
 
 
-    public String verifySignUpForm(SignUpForm signUpForm, HttpSession httpSession, Model model) {
+    public String verifySignUpForm(SignUpForm signUpForm, HttpSession httpSession, Model model) throws JsonProcessingException, InterruptedException {
 
-        RequestVerification check = new RequestVerification(false);
+        RequestVerification check = null;
         if( signUpForm.getEmail() != null
                 && !signUpForm.getEmail().isEmpty()
                 &&  signUpForm.getPassword() != null
-                && !signUpForm.getPassword().isEmpty())
+                && !signUpForm.getPassword().isEmpty()
+                && signUpForm.getEmail().contains("@"))
         {
-            check = restTemplate.postForObject(usersApiUrl + "/sign-up",signUpForm, RequestVerification.class);
+            check  = restTemplate.postForObject(usersApiUrl + "/sign-up",signUpForm, RequestVerification.class);
+        } else
+        {
+            return "invalid-data";
         }
 
         if(check.getExist()){
             httpSession.setAttribute("user",signUpForm.getEmail());
+
+            EmailListResponse emailListResponse = emailService.getAllEmails(signUpForm.getEmail());
+
+            model.addAttribute("emails",emailListResponse);
+
             return "home";
         }else {
             return "user-already-exist";
