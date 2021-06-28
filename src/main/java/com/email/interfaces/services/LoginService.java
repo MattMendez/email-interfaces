@@ -41,6 +41,8 @@ public class LoginService {
             if(!loginForm.getEmail().contains("@")){
                 return "invalid-data";
             }
+
+            System.out.println("Llamada a " + usersApiUrl + "/login-verify");
             RequestVerification requestVerification = restTemplate.postForObject(usersApiUrl + "/login-verify",loginForm, RequestVerification.class);
 
             if (requestVerification!= null && requestVerification.getExist()){
